@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hydraulic Pump Tune-Up</title>
+    
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true') { window.location.replace('login.html'); }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div id="loading-overlay">
+        <div class="loader-container">
+            <div class="glacial-spinner"></div>
+            <div class="loading-text">
+                <span class="main-text">NIK TERMINAL</span>
+                <span class="sub-text">PUMP TUNING SYSTEM v2.0</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay">
+        <div class="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+        <p class="mt-4 font-black text-white text-[10px] tracking-widest uppercase italic">NIK Cloud Sync Active...</p>
+    </div>
+
+    <div id="history-panel" class="minimized">
+        <div class="history-header p-4 border-b flex justify-between items-center bg-slate-50">
+            <h3 class="text-[10px] font-black text-slate-800 uppercase tracking-tight">
+                <i class="fas fa-database text-blue-600 mr-2"></i>Save Data Cloud
+            </h3>
+            <button onclick="toggleHistory()" class="text-slate-400 hover:text-red-500 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="history-content flex-1 overflow-y-auto p-3">
+            <div id="history-list" class="space-y-1"></div>
+        </div>
+    </div>
+
+    <div id="history-trigger" onclick="toggleHistory(event)">
+        <i class="fas fa-history mb-2"></i> RIWAYAT DATA
+    </div>
+
+    <div id="scaler-context">
+        <header class="glass-card p-5 flex justify-between items-center no-print border-l-8 border-blue-600">
+            <div class="flex items-center gap-4">
+                <a href="../index.html" class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm group">
+                    <i class="fas fa-home group-hover:scale-110 transition-transform"></i>
+                </a>
+                <div>
+                    <h1 class="text-sm font-black italic text-slate-900 uppercase tracking-tighter leading-none">
+                        Hydraulic <span class="text-blue-600">Tune-Up</span>
+                    </h1>
+                    <div id="accessBadge" class="status-badge-new inline-block mt-2 px-2 py-0.5 rounded text-[7px] font-black uppercase tracking-tighter">
+                        <i class="fas fa-circle mr-1"></i> <span id="sync-status">New Entry Mode</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-2 items-center">
+                <button onclick="switchTab('general')" id="tab-gen" class="tab-btn active px-3 py-1 text-[9px] font-black uppercase">General Test</button>
+                <button onclick="switchTab('pump')" id="tab-pump" class="tab-btn px-3 py-1 text-[9px] font-black uppercase">Pump Analysis</button>
+                <button onclick="prepareNewEntry()" class="bg-slate-100 text-slate-600 px-3 py-2 rounded-xl font-black text-[9px] uppercase hover:bg-slate-200 transition-all">New</button>
+                <button type="button" onclick="saveToCloud()" class="bg-blue-600 text-white px-5 py-2 rounded-xl font-black text-[9px] uppercase shadow-lg shadow-blue-200">Sync Data</button>
+            </div>
+        </header>
+
+        <div class="glass-card p-6">
+            <input type="hidden" id="current_record_id">
+            <div class="grid grid-cols-4 gap-4">
+                <div class="col-span-1"><label class="header-label text-blue-600">Date</label><input type="date" id="test_date" class="input-glacial !p-2"></div>
+                <div class="col-span-1"><label class="header-label">Unit Model</label><input type="text" id="unit_model" class="input-glacial !p-2 uppercase" placeholder="EX3600-6"></div>
+                <div class="col-span-1"><label class="header-label">Serial No</label><input type="text" id="serial_num" class="input-glacial !p-2 uppercase" placeholder="SN12345"></div>
+                <div class="col-span-1">
+                    <label class="header-label">NIK (Settings)</label>
+                    <div id="display-nik" class="text-[11px] font-black text-blue-600 mt-2 font-mono">LOADING...</div>
+                    <input type="hidden" id="nik">
+                </div>
+                <div class="col-span-2"><label class="header-label">Technician Name</label><input type="text" id="nama_pic" class="input-glacial input-readonly" readonly></div>
+                <div class="col-span-2"><label class="header-label">Hour Meter (HM)</label><input type="number" id="hour_meter" class="input-glacial" placeholder="0.0"></div>
+            </div>
+        </div>
+
+        <div id="section-general" class="space-y-4">
+            <div class="glass-card">
+                <div class="bg-slate-50 p-2 border-b border-slate-100">
+                    <h3 class="text-[9px] font-black text-slate-500 uppercase px-2"><i class="fas fa-history mr-2"></i>1. Component & Oil History</h3>
+                </div>
+                <table class="w-full">
+                    <thead><tr><th class="text-left pl-4">Component</th><th>Serial</th><th>Part No</th><th>Lifetime</th><th>Model</th></tr></thead>
+                    <tbody id="comp-history-body"></tbody>
+                </table>
+            </div>
+
+            <div class="glass-card">
+                <div class="bg-slate-50 p-2 border-b border-slate-100">
+                    <h3 class="text-[9px] font-black text-slate-500 uppercase px-2"><i class="fas fa-gauge-high mr-2"></i>2. Main Relief Pressure (Kgf/cm²)</h3>
+                </div>
+                <div class="p-5 grid grid-cols-4 gap-4" id="pump-relief-grid"></div>
+                <div class="bg-blue-50 py-2 text-center border-t border-blue-100">
+                    <span class="text-[9px] font-black text-blue-400 tracking-widest uppercase italic">STANDARD: 300 - 320 Kgf/cm²</span>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="bg-slate-50 p-2 border-b border-slate-100">
+                    <h3 class="text-[9px] font-black text-slate-500 uppercase px-2"><i class="fas fa-bolt mr-2"></i>3. Engine Speed (RPM)</h3>
+                </div>
+                <table class="w-full">
+                    <thead><tr><th class="text-left pl-4">Condition</th><th>Standard</th><th class="text-blue-600">Before</th><th class="text-green-600">After</th></tr></thead>
+                    <tbody id="engine-speed-body"></tbody>
+                </table>
+            </div>
+
+            <div class="glass-card">
+                <div class="bg-slate-50 p-2 border-b border-slate-100">
+                    <h3 class="text-[9px] font-black text-slate-500 uppercase px-2"><i class="fas fa-stopwatch mr-2"></i>4. Cycle Time (Sec)</h3>
+                </div>
+                <table class="w-full text-center">
+                    <thead><tr><th class="text-left pl-4">Action</th><th>Std</th><th class="text-blue-600">Before</th><th class="text-green-600">After</th></tr></thead>
+                    <tbody id="cycle-time-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="section-pump" class="hidden space-y-4">
+            <div class="flex justify-between items-center bg-slate-800 text-white p-3 rounded-xl mb-2">
+                <span class="text-[10px] font-black uppercase">Active Analysis: Pump <span id="active-p-num">1</span></span>
+                <select id="pump-select" onchange="changePump(this.value)" class="bg-slate-700 text-[10px] font-bold border-none rounded px-2 py-1 outline-none">
+                    <option value="1">PUMP 1</option><option value="2">PUMP 2</option>
+                    <option value="3">PUMP 3</option><option value="4">PUMP 4</option>
+                    <option value="5">PUMP 5</option><option value="6">PUMP 6</option>
+                    <option value="7">PUMP 7</option><option value="8">PUMP 8</option>
+                </select>
+            </div>
+            <div id="pump-tables-container"></div>
+            <div class="glass-card bg-white chart-container"><canvas id="nikChart"></canvas></div>
+            <textarea id="nik-notes" class="w-full glass-card p-3 text-[11px] font-semibold h-20 focus:outline-none" placeholder="Technical analysis notes..."></textarea>
+        </div>
+
+        <footer class="text-center py-6">
+            <p class="text-slate-300 text-[8px] uppercase font-black tracking-[0.4em] italic">© 2026 PT HEXINDO ADARO | NIK SECURED TERMINAL</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
