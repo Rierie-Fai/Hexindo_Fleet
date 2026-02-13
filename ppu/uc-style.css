@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fira+Code:wght@500&display=swap');
+
+:root {
+    --base-width: 720px;
+}
+
+body { 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+    background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 50%, #0f172a 100%); 
+    min-height: 100vh; 
+    margin: 0; padding: 0;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    visibility: hidden; 
+    color: #f1f5f9;
+}
+
+#snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+#scaler-context {
+    width: var(--base-width);
+    transform-origin: top center;
+    transition: transform 0.2s ease-out;
+    flex-shrink: 0;
+    padding: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.glass-glacial { 
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    box-shadow: 0 15px 35px 0 rgba(0, 0, 0, 0.2); 
+    border-radius: 2.5rem;
+}
+
+.inspection-table th { 
+    background: rgba(15, 23, 42, 0.9) !important; font-size: 9px; text-transform: uppercase; color: #bfdbfe; 
+    padding: 12px 4px; border: 1px solid rgba(255,255,255,0.1);
+}
+.inspection-table td { border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px; font-size: 11px; font-weight: 700; }
+
+.input-glacial { 
+    width: 100%; background: rgba(0, 0, 0, 0.2); text-align: center; font-weight: 800; padding: 8px; border-radius: 10px; 
+    border: 1px solid rgba(255, 255, 255, 0.2); font-size: 12px; color: white; outline: none;
+}
+.input-glacial:focus { border-color: #60a5fa; background: rgba(0, 0, 0, 0.4); }
+
+.worn-output { font-weight: 800; text-align: center; font-family: 'Fira Code', monospace; font-size: 11px; color: #60a5fa; }
+.worn-danger { color: #f87171 !important; background: rgba(239, 68, 68, 0.2); border-radius: 6px; }
+
+.header-label { font-size: 9px; font-weight: 800; color: #bfdbfe; text-transform: uppercase; margin-bottom: 4px; display: block; }
+.header-val { border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; font-weight: 700; width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.2); font-size: 13px; color: white; outline: none; }
+.header-val:focus { border-color: #60a5fa; }
