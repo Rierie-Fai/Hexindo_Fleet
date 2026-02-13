@@ -1,1 +1,100 @@
-as
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Command Center | White Mecha</title>
+    
+    <script>
+        // Security Gate: Hanya Admin yang boleh masuk
+        if (localStorage.getItem('isLoggedIn') !== 'true' || localStorage.getItem('userRole') !== 'admin') {
+            window.location.replace('../index.html');
+        }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="admin-style.css">
+</head>
+<body class="mecha-bg">
+
+    <div id="scaler-context" class="space-y-6">
+        
+        <header class="flex justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-500/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black italic tracking-tighter uppercase text-slate-800 leading-none" style="font-family: 'Orbitron'">
+                        ADMIN <span class="text-teal-600">COMMAND</span>
+                    </h1>
+                    <p class="text-[9px] font-bold text-slate-400 tracking-[0.2em] uppercase mt-1">Mecha Monitoring System</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="location.reload()" class="mecha-plate p-3 hover:bg-slate-50 transition-all text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+                <a href="../index.html" class="bg-teal-600 text-white px-5 py-3 rounded-2xl font-black text-[9px] uppercase tracking-widest shadow-xl shadow-teal-500/20 hover:scale-105 transition-all">Portal Utama</a>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="mecha-stat-card border-l-4 border-teal-500">
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">UC Submissions</p>
+                <h2 id="totalUC" class="text-3xl font-black mt-1 text-slate-800">0</h2>
+            </div>
+            <div class="mecha-stat-card border-l-4 border-slate-300">
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Activity Logs</p>
+                <h2 id="totalAct" class="text-3xl font-black mt-1 text-slate-800">0</h2>
+            </div>
+            <div class="mecha-stat-card border-l-4 border-amber-500">
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Toolbox Checks</p>
+                <h2 id="totalTool" class="text-3xl font-black mt-1 text-slate-800">0</h2>
+            </div>
+            <div class="mecha-stat-card border-l-4 border-slate-800">
+                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Personnel</p>
+                <h2 id="totalTech" class="text-3xl font-black mt-1 text-slate-800">0</h2>
+            </div>
+        </div>
+
+        <div class="mecha-plate p-6">
+            <h3 class="text-[10px] font-black uppercase text-teal-600 mb-4 tracking-widest italic">Performance Trend</h3>
+            <div class="h-[250px]">
+                <canvas id="prodChart"></canvas>
+            </div>
+        </div>
+
+        <div class="mecha-plate p-6">
+            <h3 class="text-[10px] font-black uppercase text-teal-600 mb-4 tracking-widest italic">Live Feed</h3>
+            <div id="liveFeed" class="space-y-3 max-h-[300px] overflow-y-auto custom-scroll pr-2">
+                <p class="text-[10px] italic text-slate-400">Syncing Mecha Data...</p>
+            </div>
+        </div>
+
+        <div class="mecha-plate p-6 mb-8">
+            <h3 class="text-[10px] font-black uppercase text-teal-600 mb-4 tracking-widest italic">Technician Leaderboard</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-slate-400 border-b border-slate-100 uppercase text-[8px] font-black tracking-[0.1em]">
+                            <th class="pb-3">Name</th>
+                            <th class="pb-3">NIK</th>
+                            <th class="pb-3">UC</th>
+                            <th class="pb-3">Tool</th>
+                            <th class="pb-3 text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingTable" class="text-slate-700 divide-y divide-slate-50">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="admin-script.js"></script>
+</body>
+</html>
