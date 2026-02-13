@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Glacier Settings | Hexindo Fleet Pro</title>
+    
+    <script>
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.replace('login.html');
+        }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="set-style.css">
+</head>
+<body>
+
+    <canvas id="snow-canvas"></canvas>
+
+    <div id="scaler-context" class="space-y-6">
+        
+        <header class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="h-10 w-10 glass-ice flex items-center justify-center hover:bg-white/30 transition-all">
+                    <svg class="w-5 h-5 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </a>
+                <div>
+                    <h1 class="text-lg font-black italic tracking-tighter uppercase text-white leading-none">NIK <span class="text-blue-300">Settings</span></h1>
+                    <p class="text-[8px] font-bold text-blue-200 uppercase mt-1 tracking-widest">Configuration Terminal</p>
+                </div>
+            </div>
+            <div id="roleBadge" class="px-4 py-2 glass-ice text-[9px] font-black uppercase tracking-widest text-blue-200 border-white/20">Access: ---</div>
+        </header>
+
+        <div class="space-y-6">
+            <section class="glass-ice p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                    <h2 class="text-[11px] font-black uppercase text-blue-200 tracking-widest">Update NIK Password</h2>
+                </div>
+
+                <form id="changePassForm" class="space-y-4">
+                    <div class="relative">
+                        <input type="password" id="newPass" class="input-glacier" placeholder="New Password" required>
+                        <div class="eye-toggle" onclick="togglePass('newPass')">
+                            <svg id="eye-icon-newPass" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="confirmPass" class="input-glacier" placeholder="Confirm Password" required>
+                        <div class="eye-toggle" onclick="togglePass('confirmPass')">
+                            <svg id="eye-icon-confirmPass" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-glacier w-full mt-2 shard-trigger">❄️ Apply New Password</button>
+                </form>
+            </section>
+
+            <section id="adminPanel" class="glass-ice p-6 hidden border-l-4 border-red-500">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                    </div>
+                    <h2 class="text-[11px] font-black uppercase text-red-400 tracking-widest">Deploy New Technician</h2>
+                </div>
+
+                <form id="addUserForm" class="space-y-4">
+                    <input type="text" id="regNik" class="input-glacier" placeholder="Nomor NIK Baru" required>
+                    <input type="text" id="regName" class="input-glacier" placeholder="Nama Lengkap" required>
+                    <button type="submit" class="btn-glacier w-full bg-slate-900 !text-white shard-trigger border border-white/10">Deploy NIK Record</button>
+                </form>
+            </section>
+
+            <section id="userListPanel" class="glass-ice p-6 hidden">
+                <h2 class="text-[10px] font-black uppercase text-blue-200 mb-6 tracking-[0.2em]">NIK Terminal Database</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-blue-300 border-b border-white/10 text-[10px] uppercase font-black">
+                                <th class="pb-3 pr-2">NIK</th>
+                                <th class="pb-3 pr-2">Identity</th>
+                                <th class="pb-3 text-right">Control</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody" class="divide-y divide-white/5"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <footer class="text-center pb-4">
+            <p class="text-[8px] font-black text-blue-300/50 uppercase tracking-widest">Hexindo Adaro Project Terminal v2.0</p>
+        </footer>
+    </div>
+
+    <script src="set-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@700&display=swap');
+
+:root {
+    --base-width: 720px;
+}
+
+body { 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+    background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 50%, #0f172a 100%); 
+    min-height: 100vh; color: #f1f5f9; 
+    margin: 0; padding: 0;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+#scaler-context {
+    width: var(--base-width);
+    transform-origin: top center;
+    transition: transform 0.2s ease-out;
+    flex-shrink: 0;
+    padding: 1.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.glass-ice { 
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(20px) saturate(180%); 
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    border-radius: 2.5rem;
+    box-shadow: 0 15px 35px 0 rgba(0, 0, 0, 0.2); 
+}
+
+.input-glacier {
+    background: rgba(0, 0, 0, 0.2); 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1.25rem; padding: 12px 18px; width: 100%; color: white; 
+    font-size: 14px; font-weight: 600; outline: none; transition: 0.3s;
+}
+
+.input-glacier:focus { 
+    border-color: #60a5fa; background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-glacier { 
+    background: #3b82f6; font-weight: 800; padding: 14px; border-radius: 1.25rem; 
+    text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em; 
+    transition: 0.3s; color: white; border: none; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+.btn-glacier:active { transform: scale(0.97); }
+
+.eye-toggle {
+    position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+    cursor: pointer; color: #bfdbfe;
+}
+
+.shard {
+    position: absolute; background: white; pointer-events: none;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    opacity: 0.8; animation: shatter 0.6s ease-out forwards; z-index: 100;
+}
+
+@keyframes shatter {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(0); opacity: 0; }
+}
